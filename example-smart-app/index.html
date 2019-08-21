@@ -167,18 +167,18 @@
 			});
 			patientApi.fetchAll({type:'Device'}).then(function(response) {
 				console.log(response);
-				/*
+				
 				var retString = "<table class='dataTable'>";
 				response.forEach(function(allObj,idx){
 					retString += 
 						"<tr>"+
-							"<td>"+allObj.typesubstance.text+"</td>"+
-							"<td>"+allObj.status+"</td>"+
+							"<td>"+allObj.type.text+"</td>"+
+							"<td>"+allObj.model+"</td>"+
 						"</tr>";
 				});
 				retString += "</table>";
 				$("#devDiv").html(retString);
-				*/
+				
 			});
 			var lookbackDate = new Date();
 			lookbackDate.setMonth(lookbackDate.getMonth()-6);
