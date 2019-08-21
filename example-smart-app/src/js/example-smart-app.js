@@ -27,7 +27,12 @@
         $.when(pt, obv).done(function(patient, obv) {
           var byCodes = smart.byCodes(obv, 'code');
           var gender = patient.gender;
+          var dob = new Date(patient.birthDate);
+          var day = dob.getDate();
+          var monthIndex = dob.getMonth() + 1;
+          var year = dob.getFullYear();
 
+          var dobStr = monthIndex + '/' + day + '/' + year;
           var fname = '';
           var lname = '';
 
@@ -43,10 +48,11 @@
           var ldl = byCodes('2089-1');
 
           var p = defaultPatient();
-          p.birthdate = patient.birthDate;
+          p.birthdate = dobStr;
           p.gender = gender;
           p.fname = fname;
           p.lname = lname;
+          p.age = parseInt(calculateAge(dob));
           p.height = getQuantityValueAndUnit(height[0]);
 
           if (typeof systolicbp != 'undefined')  {
@@ -78,6 +84,7 @@
       lname: {value: ''},
       gender: {value: ''},
       birthdate: {value: ''},
+      age: {value: ''},
       height: {value: ''},
       systolicbp: {value: ''},
       diastolicbp: {value: ''},
@@ -103,6 +110,27 @@
     return getQuantityValueAndUnit(formattedBPObservations[0]);
   }
 
+  function isLeapYear(year) {
+    return new Date(year, 1, 29).getMonth() === 1;
+  }
+
+  function calculateAge(date) {
+    if (Object.prototype.toString.call(date) === '[object Date]' && !isNaN(date.getTime())) {
+      var d = new Date(date), now = new Date();
+      var years = now.getFullYear() - d.getFullYear();
+      d.setFullYear(d.getFullYear() + years);
+      if (d > now) {
+        years--;
+        d.setFullYear(d.getFullYear() - 1);
+      }
+      var days = (now.getTime() - d.getTime()) / (3600 * 24 * 1000);
+      return years + days / (isLeapYear(now.getFullYear()) ? 366 : 365);
+    }
+    else {
+      return undefined;
+    }
+  }
+
   function getQuantityValueAndUnit(ob) {
     if (typeof ob != 'undefined' &&
         typeof ob.valueQuantity != 'undefined' &&
@@ -121,6 +149,7 @@
     $('#lname').html(p.lname);
     $('#gender').html(p.gender);
     $('#birthdate').html(p.birthdate);
+    $('#age').html(p.age);
     $('#height').html(p.height);
     $('#systolicbp').html(p.systolicbp);
     $('#diastolicbp').html(p.diastolicbp);
